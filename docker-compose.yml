@@ -1,0 +1,20 @@
+services:
+  # Backend
+  api:
+    build: ./api
+    ports:
+      - "8080:8080"
+    networks:
+      - app-weather-network
+  
+  # Frontend
+  app:
+    build: ./app
+    ports:
+      - "80:80"
+    networks:
+      - app-weather-network
+
+networks:
+  app-weather-network:
+    driver: bridge
