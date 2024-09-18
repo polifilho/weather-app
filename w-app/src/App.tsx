@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Grid, Container, Card, Typography, Box, TextField, Autocomplete, Select, MenuItem, InputLabel, FormControl, Chip, Grid2 } from '@mui/material';
 import { Line, Bar } from 'react-chartjs-2';
 import { Thermostat, Air, Opacity, Speed, WaterDrop, DeviceThermostat, WbSunny } from '@mui/icons-material';
@@ -14,7 +14,10 @@ import {
   Legend
 } from 'chart.js';
 
-import { getWeatherData } from './services/weather-api';
+import { getWeatherData, fetchCities } from './services/weather-api';
+import { TCity } from './types';
+
+import SearchLocations from './components/searchLocations';
 
 ChartJS.register(
   CategoryScale,
@@ -27,19 +30,22 @@ ChartJS.register(
   Legend
 );
 
-const cities = ['São Paulo', 'Rio de Janeiro', 'Belo Horizonte', 'Curitiba', 'Brasília'];
-
 const WeatherApp: React.FC = () => {
-  const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [selectedOptions, setSelectedOptions] = useState<string>('7');
+  
+  const [cities, setCities] = useState<TCity[]>([]);
+  const [selectedCity, setSelectedCity] = useState<string | null>(null);
+
+  const handleCityChange = (event: any, value: string | null) => {
+    console.log('teste aqui 1 >>', event, value);
+    setSelectedCity(value);
+  };
 
   useEffect(() => {
     // getWeatherData('22.9064', '-43.1822', '14');
+    // fetchCities('rio de janeiro');
   }, [])
 
-  const handleCityChange = (event: any, value: string | null) => {
-    setSelectedCity(value);
-  };
 
   const handleOptionsChange = (event: React.ChangeEvent<{ value: unknown }>|any) => {
     setSelectedOptions(event.target.value as string);
@@ -116,7 +122,7 @@ const WeatherApp: React.FC = () => {
       },
     },
   };
-
+  console.log('cities >>', cities);
   return (
     <Box sx={{ backgroundColor: '#121212', minHeight: '100vh', padding: 4 }}>
       <Container maxWidth="md">
@@ -126,22 +132,13 @@ const WeatherApp: React.FC = () => {
 
         <Grid container spacing={1}>
           <Grid item xs={6}>
-            <Box mb={4}>
-              <Autocomplete
-                value={selectedCity}
-                onChange={handleCityChange}
-                options={cities}
-                sx={{ backgroundColor: '#1e1e1e', color: 'white' }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Search Cities"
-                    variant="outlined"
-                    sx={{ input: { color: 'white' } }}
-                  />
-                )}
-              />
-            </Box>
+            <SearchLocations
+              selectedCity={selectedCity}
+              handleCityChange={handleCityChange}
+              setCities={setCities}
+              cities={cities}
+              setSelectedCity={setSelectedCity}
+            />
           </Grid>
 
           <Grid item xs={6}>
