@@ -18,3 +18,16 @@ export type TCity = {
     name: string;
     timezone: string;
 }
+
+export type TLocaionOption = {
+    props: any;
+    option: TDataOption;
+}
+
+export type TDataOption = {
+    name?: string;
+    label: string;
+    country_code: string;
+    lat: number;
+    lon: number;
+}

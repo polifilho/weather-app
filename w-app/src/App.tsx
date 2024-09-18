@@ -1,7 +1,12 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Grid, Container, Card, Typography, Box, TextField, Autocomplete, Select, MenuItem, InputLabel, FormControl, Chip, Grid2 } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Grid, Container, Card, Typography, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import { Line, Bar } from 'react-chartjs-2';
-import { Thermostat, Air, Opacity, Speed, WaterDrop, DeviceThermostat, WbSunny } from '@mui/icons-material';
+import { Thermostat, Air, Opacity, Speed, DeviceThermostat, WbSunny } from '@mui/icons-material';
+import { TCity, TDataOption } from './types';
+import SearchLocations from './components/searchLocations';
+import DataCardItem from './components/dataCards';
+import { getWeatherData } from  './services/weather-api';
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,11 +18,6 @@ import {
   Tooltip,
   Legend
 } from 'chart.js';
-
-import { getWeatherData, fetchCities } from './services/weather-api';
-import { TCity } from './types';
-
-import SearchLocations from './components/searchLocations';
 
 ChartJS.register(
   CategoryScale,
@@ -32,20 +32,38 @@ ChartJS.register(
 
 const WeatherApp: React.FC = () => {
   const [selectedOptions, setSelectedOptions] = useState<string>('7');
-  
-  const [cities, setCities] = useState<TCity[]>([]);
+  const [cities, setCities] = useState<TCity[]|any>([]);
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
+  const [forecast, setForecast] = useState<any[]>([]);
 
-  const handleCityChange = (event: any, value: string | null) => {
-    console.log('teste aqui 1 >>', event, value);
-    setSelectedCity(value);
+  // useEffect(() => {
+  //   getWeatherData('51.22172', '6.77616', '7').then((data: any) => {
+  //     const currentForecast = [
+  //       data['temperature_2m_max'].at(0),
+  //       data['temperature_2m_max'].at(0),
+  //       data['temperature_2m_min'].at(0),
+  //       data['daylight_duration'].at(0),
+  //       data['rain_sum'].at(0),
+  //       data['wind_speed_10m_max'].at(0),
+  //       data['wind_gusts_10m_max'].at(0),
+  //     ]
+  //     console.log('DATA >>>', currentForecast);
+  //   });
+  // }, [])
+
+  const handleCityChange = (event: React.ChangeEvent<{ value: unknown }>|any, value: TDataOption|any) => {
+    if (!value) {
+      setCities([]);
+    }
+    setSelectedCity(value!.label);
+    getWeatherData(value!.lat.toString(), value!.lon.toString()).then((data: TCity[]) => {
+      if (!data) {
+        setForecast([]);
+        return;
+      }
+      setForecast(data);
+    })
   };
-
-  useEffect(() => {
-    // getWeatherData('22.9064', '-43.1822', '14');
-    // fetchCities('rio de janeiro');
-  }, [])
-
 
   const handleOptionsChange = (event: React.ChangeEvent<{ value: unknown }>|any) => {
     setSelectedOptions(event.target.value as string);
@@ -122,7 +140,7 @@ const WeatherApp: React.FC = () => {
       },
     },
   };
-  console.log('cities >>', cities);
+ 
   return (
     <Box sx={{ backgroundColor: '#121212', minHeight: '100vh', padding: 4 }}>
       <Container maxWidth="md">
@@ -162,79 +180,10 @@ const WeatherApp: React.FC = () => {
           </Grid>
         </Grid>
         
+        {/* CARDS */}
         <Grid container spacing={2}>
-      {/* Cartão para Temperatura do ar */}
-      <Grid item xs={12} sm={4} md={4}>
-        <Card sx={{ padding: 2, backgroundColor: '#1e1e1e', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center' }}>
-          <Thermostat sx={{ fontSize: 40, marginRight: 2, color: '#ff5722' }} />
-          <Box>
-            <Typography variant="subtitle1">Temperatura do ar</Typography>
-            <Typography variant="h4">+17°C</Typography>
-            <Typography variant="body2" color="gray">Máx: +20°C | Mín: +14°C</Typography>
-          </Box>
-        </Card>
-      </Grid>
-
-      {/* Cartão para Sensação Térmica */}
-      <Grid item xs={12} sm={4} md={4}>
-        <Card sx={{ padding: 2, backgroundColor: '#1e1e1e', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center' }}>
-          <DeviceThermostat sx={{ fontSize: 40, marginRight: 2, color: '#03a9f4' }} />
-          <Box>
-            <Typography variant="subtitle1">Sensação de</Typography>
-            <Typography variant="h4">+15°C</Typography>
-            <Typography variant="body2" color="gray">Máx: +18°C | Mín: +12°C</Typography>
-          </Box>
-        </Card>
-      </Grid>
-
-      {/* Cartão para Probabilidade de Precipitação */}
-      <Grid item xs={12} sm={4} md={4}>
-        <Card sx={{ padding: 2, backgroundColor: '#1e1e1e', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center' }}>
-          <Opacity sx={{ fontSize: 40, marginRight: 2, color: '#03a9f4' }} />
-          <Box>
-            <Typography variant="subtitle1">Prec. probabilidade</Typography>
-            <Typography variant="h4">0%</Typography>
-            <Typography variant="body2" color="gray">Nenhuma precipitação esperada</Typography>
-          </Box>
-        </Card>
-      </Grid>
-
-      {/* Cartão para Velocidade do Vento */}
-      <Grid item xs={12} sm={4} md={4}>
-        <Card sx={{ padding: 2, backgroundColor: '#1e1e1e', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center' }}>
-          <Air sx={{ fontSize: 40, marginRight: 2, color: '#4caf50' }} />
-          <Box>
-            <Typography variant="subtitle1">Velocidade do vento</Typography>
-            <Typography variant="h4">4.6 m/s</Typography>
-            <Typography variant="body2" color="gray">Ráfaga: 7.6 m/s</Typography>
-          </Box>
-        </Card>
-      </Grid>
-
-      {/* Cartão para Rajada de Vento */}
-      <Grid item xs={12} sm={4} md={4}>
-        <Card sx={{ padding: 2, backgroundColor: '#1e1e1e', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center' }}>
-          <Speed sx={{ fontSize: 40, marginRight: 2, color: '#4caf50' }} />
-          <Box>
-            <Typography variant="subtitle1">Rajada de vento</Typography>
-            <Typography variant="h4">7.6 m/s</Typography>
-            <Typography variant="body2" color="gray">Ráfaga máxima esperada</Typography>
-          </Box>
-        </Card>
-      </Grid>
-
-      {/* Cartão para Umidade do Solo */}
-      <Grid item xs={12} sm={4} md={4}>
-        <Card sx={{ padding: 2, backgroundColor: '#1e1e1e', color: 'white', borderRadius: '16px', display: 'flex', alignItems: 'center' }}>
-          <WbSunny sx={{ fontSize: 40, marginRight: 2, color: '#FFFF00' }} />
-          <Box>
-            <Typography variant="subtitle1">Umidade do solo</Typography>
-            <Typography variant="h4">34%</Typography>
-            <Typography variant="body2" color="gray">Solo úmido</Typography>
-          </Box>
-        </Card>
-      </Grid>
-    </Grid>
+          {Object.keys(forecast).length > 0 && <DataCardItem forecast={forecast} /> }
+        </Grid>
 
         <Box mt={4}>
           <Typography variant="h5" color="white">Previsão do Tempo</Typography>

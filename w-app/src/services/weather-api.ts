@@ -1,6 +1,6 @@
 const base_url = 'http://localhost:8080'; // atualizar process.env.REACT_APP_BASE_URL
 
-export const getWeatherData = async (lat: string, lon: string, days: string = '14') => {
+export const getWeatherData = async (lat: string, lon: string, days: string = '7') => {
 	const response = await fetch(`${base_url}/weather?lat=${lat}&lon=${lon}&` + new URLSearchParams(`days=${days}`).toString());
 	const data = await response.json();
 	return data;
