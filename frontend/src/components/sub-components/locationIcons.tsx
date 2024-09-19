@@ -19,7 +19,7 @@ export const SearchLocationOption = ({ props, option }: TLocaionOption) => {
 						maxWidth: { xs: 16, md: 16 },
 				}}
 				alt="The house from the offer."
-				src={`https://open-meteo.com/images/country-flags/${option.country_code}.svg`}
+				src={`${process.env.REACT_APP_ICONS_LOCATIONS}/country-flags/${option.country_code}.svg`}
 			/>
 			<Typography variant="body1" component="p" sx={{ marginLeft: 1 }}>
 				{option.label}

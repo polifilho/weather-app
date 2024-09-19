@@ -28,7 +28,7 @@ export const SearchLocations = ({
 			})
 	    return fetchCities(selectedCity);
     }, 500),
-    []
+    [setCities, setErrorLocations, fetchCities]
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

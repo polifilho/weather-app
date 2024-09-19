@@ -10,12 +10,13 @@ services:
   
   # Frontend
   app:
-    build: ./app
+    build: ./frontend
     ports:
-      - "80:80"
+      - 3000:3000
     networks:
       - app-weather-network
     env_file: "./.env"
+    command: npm start
 
 networks:
   app-weather-network:
