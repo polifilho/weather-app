@@ -44,18 +44,17 @@ type handler struct {
 
 // Get Data from API
 func (h *handler) getLocations(location string) (LocationApiResponse, error) {
-	fmt.Print(location)
 	url := fmt.Sprintf("%s/search?name=%s", h.weatherSearchCitiesEndpoint, location)
-	h.logger.Debug("URL >>>>", url)
+
 	resp, err := http.Get(url)
 	if err != nil {
-		h.logger.Error("error request >>> ", err)
+		h.logger.Error("Error Response Locations API :: ", err)
 		return LocationApiResponse{}, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode >= 400 {
-		h.logger.Error("error acima de 400 ", err)
+		h.logger.Error("Error above 400 Locations API :: ", err)
 		return LocationApiResponse{}, err
 	}
 
@@ -73,9 +72,15 @@ func (h *handler) getAllWeatherData(lat, lon, days string) (WeatherApiResponse, 
 
 	resp, err := http.Get(url)
 	if err != nil {
+		h.logger.Error("Error Response Weather API :: ", err)
 		return WeatherApiResponse{}, err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		h.logger.Error("Error above 400 Weather API :: ", err)
+		return WeatherApiResponse{}, err
+	}
 
 	var weatherData WeatherApiResponse
 	err = json.NewDecoder(resp.Body).Decode(&weatherData)
@@ -107,6 +112,7 @@ func (h *handler) weatherHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(weather.Daily)
 }
 
+// Preparing request for Endpoint "/weather/locations"
 func (h *handler) locationsHandler(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
 	city = strings.ReplaceAll(city, " ", "+")

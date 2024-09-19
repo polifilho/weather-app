@@ -5,6 +5,7 @@ import { TSearchLocations, TCities } from '../types';
 import { fetchCities } from '../services/weather-api';
 import { handleLocationOption } from '../helpers';
 import SearchLocationOption from './sub-components/locationIcons';
+import { CONTENT } from '../commons/content';
 
 export const SearchLocations = ({
 	selectedCity,
@@ -44,7 +45,7 @@ export const SearchLocations = ({
 		<Box mb={4}>
 			<Autocomplete
 				value={selectedCity}
-				noOptionsText={errorLocations ? 'Please, fix the location name' : 'no results, search for a location'}
+				noOptionsText={errorLocations ? `${CONTENT.searchSelect.error}` : `${CONTENT.searchSelect.warning}`}
 				id='auto-complete'
 				onChange={handleCityChange}
 				options={cities && cities.map(city => handleLocationOption(city)) as any[]}
@@ -53,7 +54,7 @@ export const SearchLocations = ({
 				renderInput={(params) => (
 					<TextField
 						{...params}
-						label="Search Cities"
+						label={CONTENT.searchSelect.label}
 						variant="outlined"
 						sx={{ color: 'white' }}
 						onChange={handleChange}

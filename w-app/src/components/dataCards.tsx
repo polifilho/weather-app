@@ -1,7 +1,10 @@
 import { Grid, Card, Typography, Box} from '@mui/material';
 import { Thermostat, Air, Opacity, Speed, DeviceThermostat, WbSunny } from '@mui/icons-material';
+import { getDaylight } from '../helpers'
+import { TForecastAPIResponseItem } from '../types'
+import { CONTENT } from '../commons/content';
 
-export const DataCardItem = ({ forecast }: any) => {
+export const DataCardItem = ({ forecast }: TForecastAPIResponseItem|any) => {
 	if (!forecast) {
 		return null;
 	}
@@ -9,33 +12,33 @@ export const DataCardItem = ({ forecast }: any) => {
 	const inforCardsItem = [
 		{
 			icon: <Thermostat sx={{ fontSize: 40, marginRight: 2, color: '#ff5722' }} />,
-			label: "Max Temperature",
+			label: CONTENT.cards.maxTemp,
 			value: `${forecast['temperature_2m_max'][0]}°C`,
 		},
 		{
 			icon: <DeviceThermostat sx={{ fontSize: 40, marginRight: 2, color: '#03a9f4' }} />,
-			label: "Min Temperature",
+			label: CONTENT.cards.minTemp,
 			value: `${forecast['temperature_2m_min'][0]}°C`,
 		},
 		{
 			icon: <Opacity sx={{ fontSize: 40, marginRight: 2, color: '#03a9f4' }} />,
-			label: "Precipitation",
+			label: CONTENT.cards.precipitation,
 			value: `${forecast['rain_sum'][0]}%`,
 		},
 		{
 			icon: <Air sx={{ fontSize: 40, marginRight: 2, color: '#4caf50' }} />,
-			label: "Wind Speed",
+			label: CONTENT.common.speed,
 			value: `${forecast['wind_speed_10m_max'][0]}m/s`,
 		},
 		{
 			icon: <Speed sx={{ fontSize: 40, marginRight: 2, color: '#4caf50' }} />,
-			label: "Wind Gust",
+			label: CONTENT.common.gust,
 			value: `${forecast['wind_gusts_10m_max'][0]}m/s`,
 		},
 		{
 			icon: <WbSunny sx={{ fontSize: 40, marginRight: 2, color: '#FFFF00' }} />,
-			label: "Daylight Duration",
-			value: `${forecast['daylight_duration'][0]}%`,
+			label: CONTENT.cards.daylight,
+			value: `${getDaylight(forecast['daylight_duration'][0])}`,
 		},
 	]
 

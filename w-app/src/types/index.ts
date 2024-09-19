@@ -31,3 +31,21 @@ export type TDataOption = {
     lat: number;
     lon: number;
 }
+
+export type TForecastAPIResponse = {
+    forecast: TForecastAPIResponseItem[];
+}
+
+export type TForecastAPIResponseItem = {
+    rain_sum: number[];
+    daylight_duration: number[];
+    temperature_2m_max: number[];
+    temperature_2m_min: number[];
+    wind_gusts_10m_max: number[];
+    wind_speed_10m_max: number[];
+}
+
+export type TSelectDays = {
+    selectedOptions: string;
+    handleOptionsChange: (event: any) => void
+}
